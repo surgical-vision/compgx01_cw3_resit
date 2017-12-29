@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- LAUNCH INTERFACE -->
+    <arg name="hardware_interface" default="PositionJointInterface"/>
+    <arg name="robot_name" default="hand_iiwa"/>
+    
+    <arg name="hand_serial" default="1658" />
+    <arg name="hand_id" default="lh" />
+    
+    <arg name="controllers" default="$(arg robot_name)/$(arg hardware_interface)_trajectory_controller"/>
+    <group ns="$(arg robot_name)">
+        <rosparam command="load" file="$(find cw3_control)/config/hand_iiwa_joint_names.yaml" />
+        <rosparam file="$(find cw3_control)/config/hand_iiwa_controller.yaml" command="load" />
+    </group>
+        
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen" args="$(arg controllers) --shutdown-timeout 2" />
+  
+    <!-- Directly taken from srhand.launch -->
+    <param name="/hand/mapping/$(arg hand_serial)" value="$(arg hand_id)"/>
+    <param name="/hand/joint_prefix/$(arg hand_serial)" value="$(arg hand_id)_"/>
+    <include file="$(find ros_ethercat_model)/launch/joint_state_publisher.launch" />
+    <rosparam command="load" file="$(find sr_description)/hand/config/$(arg hand_id)_controller_gazebo.yaml"/>
+    
+    <!-- Robot state publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" type="string" value="" />
+    </node>
+    
+    <node name="$(arg hand_id)_trajectory_controller" pkg="sr_utilities" type="trajectory_controller_spawner.py" output="screen">
+      <param name="hand_trajectory" value ="true"/>
+    </node>
+    
+</launch>

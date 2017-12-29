@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="hand_iiwa">
+
+    <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+    <xacro:arg name="initial_z" default="0.0"/>   
+    
+    <link name="world"/>
+
+    <xacro:include filename="$(find iiwa_fri_description)/urdf/iiwa14.xacro"/>
+    <xacro:include filename="$(find sr_description)/materials.urdf.xacro"/>
+	<xacro:include filename="$(find sr_description)/hand/xacro/hand_lite.urdf.xacro"/>
+    <xacro:include filename="$(find sr_description)/other/xacro/gazebo/gazebo.urdf.xacro"/>
+ 
+    <xacro:arg name="robot_name" default="hand_iiwa"/>
+    <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+
+    <joint name="$(arg robot_name)_world_joint" type="fixed">
+        <parent link="world"/>
+        <child link="$(arg robot_name)_link_0"/>
+        <origin xyz="0.0 0.5 ${$(arg initial_z) + 0.008}" rpy="0.0 0.0 ${0.0}"/>
+    </joint>
+    
+    <xacro:iiwa14 hardware_interface="$(arg hardware_interface)" robot_name="$(arg robot_name)">
+    </xacro:iiwa14>
+    
+    <xacro:shadowhand muscletrans="false" muscle="false" bio="false" bt_sp="false" ubi="false" eli="false"
+                      reflect="-1.0" prefix="lh_" extra_lite="false"/>
+
+    <joint name="$(arg robot_name)_ee_to_hand" type="fixed">
+        <parent link="$(arg robot_name)_link_ee"/>
+        <child link="lh_forearm"/>
+		<origin xyz="0.0 0.0 0.02" rpy="${0.0} ${0.0} ${0.0}"/>
+    </joint>
+    
+    <xacro:include filename="$(find cw3_description)/urdf/kinect.urdf.xacro"/>
+    <xacro:shadowarm_side_kinect />
+    
+    <joint name="kinect_world_to_eye" type="fixed">
+        <parent link="world"/>
+        <child link="camera_link"/>
+		<origin xyz="0.6 -0.1 1.1" rpy="${0.0} ${pi/8} ${pi/2}"/>
+    </joint>
+
+</robot>

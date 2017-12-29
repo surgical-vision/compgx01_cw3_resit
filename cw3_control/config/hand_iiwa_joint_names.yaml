@@ -1,0 +1,8 @@
+joints: 
+    - hand_iiwa_joint_1
+    - hand_iiwa_joint_2
+    - hand_iiwa_joint_3
+    - hand_iiwa_joint_4
+    - hand_iiwa_joint_5
+    - hand_iiwa_joint_6
+    - hand_iiwa_joint_7

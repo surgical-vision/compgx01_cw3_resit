@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Arguments available to run this -->
+    <arg name="robot_name" default="hand_iiwa"/>
+    <arg name="gui" default="true"/>
+    <arg name="hardware_interface" default="PositionJointInterface"/>
+    <arg name="robot_description" default="$(find cw3_description)/urdf/hand_iiwa.urdf.xacro" />
+    <arg name="scene" default="true"/>
+    
+    <arg name="world" default="$(find cw3_description)/worlds/ucl_lab.world"/>
+    <arg name="initial_z" default="0.73335" />
+    <arg name="start_home" default="true"/>
+    
+    <env name="GAZEBO_MODEL_PATH" value="$(find cw3_description)/models/" />
+    <env name="GAZEBO_MODEL_DATABASE_URI" value="" />
+    <env name="MESH_WORKSPACE_PATH" value="$(find cw3_description)/models/" />
+  
+    <!--Ros controllers -->
+    <include file="$(find cw3_control)/launch/hand_iiwa_control.launch">
+      <arg name="robot_name" value="$(arg robot_name)"/>
+      <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+      <arg name="hand_serial" value="1658" />
+      <arg name="hand_id" value="lh" />
+    </include>
+    
+`   
+    <include file="$(find iiwa_fri_gazebo)/launch/iiwa_world.launch">
+      <arg name="robot_description" value="$(arg robot_description)"/>
+      <arg name="robot_name" value="$(arg robot_name)"/>
+      <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+      <arg name="world" value="$(arg world)"/>
+      <arg name="initial_z" value="$(arg initial_z)" />
+      <arg name="start_home" value="$(arg start_home)"/>
+    </include>
+    
+    <group if="$(arg scene)">
+      <include file="$(find gazebo2rviz)/launch/gazebo2moveit.launch">
+        <arg name="frequency" default="1" />
+      </include>
+    </group>
+
+      
+    
+    <!-- Moveit -->
+    <include file="$(find hand_iiwa_moveit)/launch/planning_context.launch" />
+    <include file="$(find hand_iiwa_moveit)/launch/move_group.launch">
+        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+    </include>
+    
+    <!-- GUI -->
+    <include if="$(arg gui)" file="$(find hand_iiwa_moveit)/launch/moveit_rviz.launch">
+        <arg name="config" value="true"/>
+    </include>
+     
+</launch>
