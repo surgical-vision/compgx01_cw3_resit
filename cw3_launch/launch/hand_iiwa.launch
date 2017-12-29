@@ -5,7 +5,6 @@
     <arg name="gui" default="true"/>
     <arg name="hardware_interface" default="PositionJointInterface"/>
     <arg name="robot_description" default="$(find cw3_description)/urdf/hand_iiwa.urdf.xacro" />
-    <arg name="scene" default="true"/>
     
     <arg name="world" default="$(find cw3_description)/worlds/ucl_lab.world"/>
     <arg name="initial_z" default="0.73335" />
@@ -33,14 +32,10 @@
       <arg name="start_home" value="$(arg start_home)"/>
     </include>
     
-    <group if="$(arg scene)">
-      <include file="$(find gazebo2rviz)/launch/gazebo2moveit.launch">
-        <arg name="frequency" default="1" />
-      </include>
-    </group>
-
-      
-    
+		<include file="$(find gazebo2rviz)/launch/gazebo2moveit.launch">
+			<arg name="frequency" default="1" />
+		</include>
+		  
     <!-- Moveit -->
     <include file="$(find hand_iiwa_moveit)/launch/planning_context.launch" />
     <include file="$(find hand_iiwa_moveit)/launch/move_group.launch">

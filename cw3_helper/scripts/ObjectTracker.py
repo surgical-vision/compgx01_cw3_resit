@@ -8,12 +8,14 @@ import tf2_ros
 import PyKDL
 import tf2_kdl
 from tf_conversions import posemath
+import numpy as np
 
 
 class ObjectTracker(object):
     def __init__(self):
         self.object_names = rospy.get_param('object_list', ['duplo_2x2x1', 'duplo_2x4x1'])
-        self.noise_params = rospy.get_param('sensor_noise', '')
+        self.trans_noise = rospy.get_param('trans_noise', '0.0')
+        self.rotation_noise = rospy.get_param('rotation_noise', '0.0')
         self.camera_link_name = rospy.get_param('camera_link_name', 'camera_link')
         self.gazebo_subscriber = rospy.Subscriber('/gazebo/model_states', ModelStates, self.calback_gazebo_state,
                                                   queue_size=30)
@@ -26,6 +28,14 @@ class ObjectTracker(object):
 
         cam_trans_msg = self.tf_buffer.lookup_transform(self.camera_link_name, 'world', rospy.Time.now())
         self.cam_trans = tf2_kdl.transform_to_kdl(cam_trans_msg)
+
+    def generate_noise_trans(self):
+        noise = np.random.normal(np.zeros(6), [self.trans_noise, self.trans_noise, self.trans_noise,
+                                               self.rotation_noise, self.rotation_noise, self.rotation_noise])
+        noise_vec = PyKDL.Vector(noise[0], noise[1], noise[2])
+        noise_rot = PyKDL.Rotation().EulerZYX(noise[3], noise[4], noise[5])
+        noise_trans = PyKDL.Frame(noise_rot, noise_vec)
+        return noise_trans
 
     def calback_gazebo_state(self, msg):
         # Find the indicies for the object list
@@ -42,7 +52,8 @@ class ObjectTracker(object):
         for object in matched_object_list:
             object_msg = RecognizedObject()
             object_pose = PoseWithCovarianceStamped()
-            object_pose.pose.pose = posemath.toMsg(self.cam_trans.Inverse() * posemath.fromMsg(object[0]))
+            object_pose.pose.pose = posemath.toMsg(self.cam_trans.Inverse() * posemath.fromMsg(object[0])) * \
+                                    self.generate_noise_trans()
             object_msg.pose = object_pose
             object_msg.type.key = object[1]
             object_array.objects.append(object_msg)

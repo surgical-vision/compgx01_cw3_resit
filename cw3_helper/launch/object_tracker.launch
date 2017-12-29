@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="translation_noise" default="0.0"/>
+	<arg name="rotation_noise" defualt="0.0"/>
+	
+	<param name="trans_noise" value="$(arg translation_noise)"/>
+	<param name="rotation_noise" value="$(arg rotation_noise)"/>
+	
+	<node name="object_tracker" pkg="cw3_helper" type="ObjectTracker.py"/>
+	
+</launch>
