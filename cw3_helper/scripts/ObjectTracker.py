@@ -14,11 +14,9 @@ import numpy as np
 class ObjectTracker(object):
     def __init__(self):
         self.object_names = rospy.get_param('object_list', ['duplo_2x2x1', 'duplo_2x4x1'])
-        self.trans_noise = rospy.get_param('trans_noise', '0.0')
-        self.rotation_noise = rospy.get_param('rotation_noise', '0.0')
+        self.trans_noise = rospy.get_param('trans_noise', 0.0)
+        self.rotation_noise = rospy.get_param('rotation_noise', 0.0)
         self.camera_link_name = rospy.get_param('camera_link_name', 'camera_link')
-        self.gazebo_subscriber = rospy.Subscriber('/gazebo/model_states', ModelStates, self.calback_gazebo_state,
-                                                  queue_size=30)
 
         self.object_publisher = rospy.Publisher('/recognized_object_array', RecognizedObjectArray, queue_size=10)
 
@@ -26,14 +24,33 @@ class ObjectTracker(object):
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
 
-        cam_trans_msg = self.tf_buffer.lookup_transform(self.camera_link_name, 'world', rospy.Time.now())
+        rospy.sleep(5)
+
+        cam_trans_msg = None
+        while cam_trans_msg is None:
+            try:
+                cam_trans_msg = self.tf_buffer.lookup_transform(self.camera_link_name, 'world', rospy.Time.now())
+            finally:
+                if cam_trans_msg is not None:
+                    break
+
         self.cam_trans = tf2_kdl.transform_to_kdl(cam_trans_msg)
+        self.gazebo_subscriber = rospy.Subscriber('/gazebo/model_states', ModelStates, self.calback_gazebo_state,
+                                                  queue_size=30)
 
     def generate_noise_trans(self):
-        noise = np.random.normal(np.zeros(6), [self.trans_noise, self.trans_noise, self.trans_noise,
-                                               self.rotation_noise, self.rotation_noise, self.rotation_noise])
-        noise_vec = PyKDL.Vector(noise[0], noise[1], noise[2])
-        noise_rot = PyKDL.Rotation().EulerZYX(noise[3], noise[4], noise[5])
+        if self.trans_noise > 0.0:
+            noise_t = np.random.normal(np.zeros(3), self.trans_noise * np.ones(3))
+        else:
+            noise_t = np.zeros(3)
+
+        if self.rotation_noise > 0.0:
+            noise_r = np.random.normal(np.zeros(3), self.rotation_noise * np.ones(3))
+        else:
+            noise_r = np.zeros(3)
+
+        noise_vec = PyKDL.Vector(noise_t[0], noise_t[1], noise_t[2])
+        noise_rot = PyKDL.Rotation().EulerZYX(noise_r[0], noise_r[1], noise_r[2])
         noise_trans = PyKDL.Frame(noise_rot, noise_vec)
         return noise_trans
 
@@ -42,6 +59,7 @@ class ObjectTracker(object):
         matched_object_list = []
         object_array = RecognizedObjectArray()
         object_array.header.stamp = rospy.Time.now()
+        object_array.header.frame_id = self.camera_link_name
         for object in self.object_names:
             try:
                 index = msg.name.index(object)
@@ -52,8 +70,10 @@ class ObjectTracker(object):
         for object in matched_object_list:
             object_msg = RecognizedObject()
             object_pose = PoseWithCovarianceStamped()
-            object_pose.pose.pose = posemath.toMsg(self.cam_trans.Inverse() * posemath.fromMsg(object[0])) * \
-                                    self.generate_noise_trans()
+            object_pose.header.stamp = rospy.Time.now()
+            object_pose.header.frame_id = self.camera_link_name
+            object_pose.pose.pose = posemath.toMsg(self.cam_trans.Inverse() * posemath.fromMsg(object[0]) * \
+                                    self.generate_noise_trans())
             object_msg.pose = object_pose
             object_msg.type.key = object[1]
             object_array.objects.append(object_msg)

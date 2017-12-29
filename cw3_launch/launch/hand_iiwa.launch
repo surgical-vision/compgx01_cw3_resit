@@ -24,6 +24,7 @@
     
 `   
     <include file="$(find iiwa_fri_gazebo)/launch/iiwa_world.launch">
+      <arg name="gui" value="false"/>
       <arg name="robot_description" value="$(arg robot_description)"/>
       <arg name="robot_name" value="$(arg robot_name)"/>
       <arg name="hardware_interface" value="$(arg hardware_interface)"/>
