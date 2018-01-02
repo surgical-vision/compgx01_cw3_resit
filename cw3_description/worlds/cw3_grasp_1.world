@@ -37,15 +37,7 @@
       <pose>0.62 0.3 0.727 0 -0 1.5708</pose>
     </include>
 
-    <!-- Walls -->
-    <!-- Right wall -->
-    <include>
-      <uri>model://wall</uri>
-      <static>true</static>
-      <name>wall_1</name>
-      <pose>-2 0.9 1 0 -0 0</pose>
-    </include>
-    <!-- Back wall: Modified to allow full extension of arm at startup. Real wall at 0.46315 instead of 1.26315 -->
+    <!-- Back wall -->
     <include>
       <uri>model://wall</uri>
       <static>true</static>
@@ -53,19 +45,26 @@
       <pose>-0.5 0.5 1 0 -0 1.5708</pose>
     </include>
 
-    <!-- Objects -->
+    <!-- Objects  -->
     <include>
-      <uri>model://Wood cube 2.5cm</uri>
+      <uri>model://RedCylinder</uri>
       <static>false</static>
-      <name>wood_small</name>
-      <pose>0.45 0.6 0.75 0 -0 0</pose>
+      <name>RedCylinder</name>
+      <pose>0.6 0.4 0.75 0 -0 0</pose>
     </include>
 
     <include>
-      <uri>model://duplo_2x4x1</uri>
+      <uri>model://BlueCuboid</uri>
       <static>false</static>
-      <name>duplo_2x4x1</name>
-      <pose>0.55 0.4 0.75 0 -0 0</pose>
+      <name>BlueCuboid</name>
+      <pose>0.4 0.05 0.75 0 -0 0</pose>
+    </include>
+    
+    <include>
+      <uri>model://GreenCube</uri>
+      <static>false</static>
+      <name>GreenCube</name>
+      <pose>0.7 0.65 0.75 0 -0 0</pose>
     </include>
 
     <physics type="ode">

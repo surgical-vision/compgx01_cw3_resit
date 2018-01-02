@@ -3,26 +3,33 @@
 import rospy
 from gazebo_msgs.msg import ModelStates
 from object_recognition_msgs.msg import RecognizedObjectArray, RecognizedObject, ObjectType
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, TransformStamped
 import tf2_ros
 import PyKDL
 import tf2_kdl
 from tf_conversions import posemath
 import numpy as np
+import threading
 
 
 class ObjectTracker(object):
     def __init__(self):
-        self.object_names = rospy.get_param('object_list', ['duplo_2x2x1', 'duplo_2x4x1'])
+        self.object_names = rospy.get_param('object_list', ['RedCylinder', 'BlueCuboid', 'GreenCube'])
         self.trans_noise = rospy.get_param('trans_noise', 0.0)
         self.rotation_noise = rospy.get_param('rotation_noise', 0.0)
         self.camera_link_name = rospy.get_param('camera_link_name', 'camera_link')
 
-        self.object_publisher = rospy.Publisher('/recognized_object_array', RecognizedObjectArray, queue_size=10)
+        self.object_publisher = rospy.Publisher('/recognized_objects_array', RecognizedObjectArray, queue_size=10)
 
         # Get camera link in reference to the world through tf
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+
+        # tf publisher
+        self.tf_pub = tf2_ros.TransformBroadcaster()
+
+        self.matched_object_list = []
+        self.matched_object_lock = threading.Lock()
 
         rospy.sleep(5)
 
@@ -39,6 +46,12 @@ class ObjectTracker(object):
                                                   queue_size=30)
 
     def generate_noise_trans(self):
+        '''
+        Generates a noisy transfrom to apply to the true transform of the model.
+        :return: Noisy transform
+        :rtype: PyKDL.Frame
+        '''
+
         if self.trans_noise > 0.0:
             noise_t = np.random.normal(np.zeros(3), self.trans_noise * np.ones(3))
         else:
@@ -55,33 +68,77 @@ class ObjectTracker(object):
         return noise_trans
 
     def calback_gazebo_state(self, msg):
-        # Find the indicies for the object list
-        matched_object_list = []
-        object_array = RecognizedObjectArray()
-        object_array.header.stamp = rospy.Time.now()
-        object_array.header.frame_id = self.camera_link_name
-        for object in self.object_names:
+        '''
+        Callback function for getting the model states from gazebo. Function gets all the model states then matches the
+        names to the object list.
+        :param msg: gazebo model states
+        :return:
+        '''
+
+        try:
+            self.matched_object_lock.acquire()
+            self.matched_object_list = []
+            object_array = RecognizedObjectArray()
+            object_array.header.stamp = rospy.Time.now()
+            object_array.header.frame_id = self.camera_link_name
+            for object in self.object_names:
+                try:
+                    index = msg.name.index(object)
+                    self.matched_object_list.append([msg.pose[index], msg.name[index]])
+                except ValueError:
+                    continue
+
+        finally:
+            self.matched_object_lock.release()
+
+    def run(self):
+        '''
+        Main run function that constructs the recognised object array message from the matched object list and noise
+        params.
+        :return:
+        '''
+
+        rate = rospy.Rate(30)
+
+        while not rospy.is_shutdown():
             try:
-                index = msg.name.index(object)
-                matched_object_list.append([msg.pose[index], msg.name[index]])
-            except ValueError:
-                continue
+                self.matched_object_lock.acquire()
 
-        for object in matched_object_list:
-            object_msg = RecognizedObject()
-            object_pose = PoseWithCovarianceStamped()
-            object_pose.header.stamp = rospy.Time.now()
-            object_pose.header.frame_id = self.camera_link_name
-            object_pose.pose.pose = posemath.toMsg(self.cam_trans.Inverse() * posemath.fromMsg(object[0]) * \
-                                    self.generate_noise_trans())
-            object_msg.pose = object_pose
-            object_msg.type.key = object[1]
-            object_array.objects.append(object_msg)
+                object_array = RecognizedObjectArray()
+                object_array.header.stamp = rospy.Time.now()
+                object_array.header.frame_id = self.camera_link_name
 
-        self.object_publisher.publish(object_array)
+                for object in self.matched_object_list:
+                    object_msg = RecognizedObject()
+                    object_pose = PoseWithCovarianceStamped()
+                    object_pose.header.stamp = rospy.Time.now()
+                    object_pose.header.frame_id = self.camera_link_name
+                    object_pose.pose.pose = posemath.toMsg(self.cam_trans * posemath.fromMsg(object[0]) * \
+                                            self.generate_noise_trans())
+                    object_msg.pose = object_pose
+                    object_msg.type.key = object[1]
+                    object_array.objects.append(object_msg)
+
+                    # publish tf
+                    trans = TransformStamped()
+                    trans.header.stamp = rospy.Time.now()
+                    trans.header.frame_id = self.camera_link_name
+                    trans.child_frame_id = object[1]
+                    trans.transform.translation = object_pose.pose.pose.position
+                    trans.transform.rotation = object_pose.pose.pose.orientation
+                    self.tf_pub.sendTransform(trans)
+
+                self.object_publisher.publish(object_array)
+
+            except rospy.exceptions.ROSInterruptException:
+                break
+
+            finally:
+                self.matched_object_lock.release()
+                rate.sleep()
 
 
 if __name__ == "__main__":
     rospy.init_node('object_tracker')
     track = ObjectTracker()
-    rospy.spin()
+    track.run()

@@ -2,7 +2,8 @@
 <launch>
 	<!-- Arguments available to run this -->
   <arg name="gui" default="true"/>
-  <arg name="world" default="$(find cw3_description)/worlds/ucl_lab.world"/>
+  <arg name="scene" default="1"/>
+  <arg name="world" default="$(find cw3_description)/worlds/cw3_grasp_$(arg scene).world"/>
   <arg name="initial_z" default="0.73335" />
     
   <arg name="translation_noise" default="0.0"/>
@@ -14,9 +15,9 @@
     <arg name="initial_z" value="$(arg initial_z)"/>
   </include>
   
-  <!--<include file="$(find cw3_helper)/launch/object_tracker.launch">
+  <include file="$(find cw3_helper)/launch/object_tracker.launch">
   	<arg name="translation_noise" value="$(arg translation_noise)"/>
 	<arg name="rotation_noise" value="$(arg rotation_noise)"/>
-  </include>-->
+  </include>
 
 </launch>

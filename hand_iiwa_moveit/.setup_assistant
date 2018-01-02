@@ -1,10 +1,10 @@
 moveit_setup_assistant_config:
   URDF:
-    package: sat_iiwa_description
-    relative_path: urdf/sat_iiwa.urdf.xacro
+    package: cw3_description
+    relative_path: urdf/hand_iiwa.urdf.xacro
   SRDF:
-    relative_path: config/sat_robot.srdf
+    relative_path: config/hand_iiwa.srdf
   CONFIG:
     author_name: George Dwyer
     author_email: george.dwyer@ucl.ac.uk
-    generated_timestamp: 1509549016
+    generated_timestamp: 1514899403

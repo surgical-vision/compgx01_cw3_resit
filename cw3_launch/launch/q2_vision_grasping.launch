@@ -2,11 +2,12 @@
 <launch>
 	<!-- Arguments available to run this -->
   <arg name="gui" default="true"/>
-  <arg name="world" default="$(find cw3_description)/worlds/ucl_lab.world"/>
+  <arg name="scene" default="1"/>
+  <arg name="world" default="$(find cw3_description)/worlds/cw3_grasp_$(arg scene).world"/>
   <arg name="initial_z" default="0.73335" />
     
-  <arg name="translation_noise" default="0.5"/>
-  <arg name="rotation_noise" default="0.1"/>
+  <arg name="translation_noise" default="0.005"/>
+  <arg name="rotation_noise" default="0.05"/>
   
   <include file="$(find cw3_launch)/launch/hand_iiwa.launch">
     <arg name="gui" value="$(arg gui)"/>
