@@ -30,6 +30,8 @@
       <param name="tf_prefix" type="string" value="" />
     </node>
     
+    <remap from="hand_iiwa/joint_states" to="/joint_states"/>
+    
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(arg world)"/>
