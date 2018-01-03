@@ -1,4 +1,4 @@
-sr_lh_trajectory_controller:
+lh_trajectory_controller:
   type: "position_controllers/JointTrajectoryController"
   joints:
     - lh_FFJ1
@@ -17,25 +17,6 @@ sr_lh_trajectory_controller:
     - lh_THJ2
     - lh_THJ4
     - lh_THJ5
-  constraints:
-      goal_time: 0.6
-      stopped_velocity_tolerance: 0.05
-      lh_FFJ1: {trajectory: 0.9, goal: 0.4}
-      lh_FFJ2: {trajectory: 0.9, goal: 0.4}
-      lh_FFJ3: {trajectory: 0.9, goal: 0.4}
-      lh_FFJ4: {trajectory: 0.9, goal: 0.4}
-      lh_MFJ1: {trajectory: 0.9, goal: 0.4}
-      lh_MFJ2: {trajectory: 0.9, goal: 0.4}
-      lh_MFJ3: {trajectory: 0.9, goal: 0.4}
-      lh_MFJ4: {trajectory: 0.9, goal: 0.4}
-      lh_RFJ1: {trajectory: 0.9, goal: 0.4}
-      lh_RFJ2: {trajectory: 0.9, goal: 0.4}
-      lh_RFJ3: {trajectory: 0.9, goal: 0.4}
-      lh_RFJ4: {trajectory: 0.9, goal: 0.4}
-      lh_THJ1: {trajectory: 0.9, goal: 0.4}
-      lh_THJ2: {trajectory: 0.9, goal: 0.4}
-      lh_THJ3: {trajectory: 0.9, goal: 0.4}
-      lh_THJ4: {trajectory: 0.9, goal: 0.4}
-      lh_THJ5: {trajectory: 0.9, goal: 0.4}
+ 
   stop_trajectory_duration: 0.5
   allow_partial_joints_goal: true

@@ -81,9 +81,9 @@ class ObjectTracker(object):
             object_array = RecognizedObjectArray()
             object_array.header.stamp = rospy.Time.now()
             object_array.header.frame_id = self.camera_link_name
-            for object in self.object_names:
+            for object_name in self.object_names:
                 try:
-                    index = msg.name.index(object)
+                    index = msg.name.index(object_name)
                     self.matched_object_list.append([msg.pose[index], msg.name[index]])
                 except ValueError:
                     continue
@@ -140,5 +140,10 @@ class ObjectTracker(object):
 
 if __name__ == "__main__":
     rospy.init_node('object_tracker')
-    track = ObjectTracker()
-    track.run()
+    try:
+        track = ObjectTracker()
+        track.run()
+    except rospy.exceptions.ROSInterruptException:
+        rospy.loginfo('Object Tracker shutting down.')
+
+
