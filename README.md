@@ -24,3 +24,6 @@ For questions 1 and 2 an example script is provided in scripts/example_script.py
 ## Hints
 ### Grasp controller
 There are a number of ways to implement a grasp controller a simple version would be to manually move the robot into pregrasp and grasp poses recorded relative to the object. However the controller may struggle with unseen object poses. Alternatively you could use knowlegde of the geometry of the object to plan the grasp poses for contact with the object.
+
+### Dynamics
+Current joint torque is given in the effort section of `/joint_states`.
