@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <launch>
     <!-- Arguments available to run this -->
-    <arg name="robot_name" default="hand_iiwa"/>
+    <arg name="robot_name" default="object_iiwa"/>
     <arg name="gui" default="true"/>
     <arg name="gz_gui" default="true"/>
     <arg name="hardware_interface" default="EffortJointInterface"/>
     <arg name="robot_description" default="$(find cw3_description)/urdf/object_iiwa.urdf.xacro" />
-    
+    <arg name="mass" default="1"/>
     <arg name="world" default="$(find iiwa_fri_gazebo)/worlds/iiwa.world"/>
     <arg name="initial_z" default="0.0" />
     <arg name="start_home" default="true"/>
@@ -19,8 +19,8 @@
     
     <group ns="$(arg robot_name)">
         <arg name="controllers" default="joint_state_controller $(arg hardware_interface)_trajectory_controller"/>
-        <rosparam command="load" file="$(find cw3_control)/config/hand_iiwa_joint_names.yaml" />
-        <rosparam file="$(find cw3_control)/config/hand_iiwa_controller.yaml" command="load" />
+        <rosparam command="load" file="$(find cw3_control)/config/object_iiwa_joint_names.yaml" />
+        <rosparam file="$(find cw3_control)/config/object_iiwa_controller.yaml" command="load" />
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
       output="screen" args="$(arg controllers) --shutdown-timeout 2" />
     </group>
@@ -30,7 +30,7 @@
       <param name="tf_prefix" type="string" value="" />
     </node>
     
-    <remap from="hand_iiwa/joint_states" to="/joint_states"/>
+    <remap from="object_iiwa/joint_states" to="/joint_states"/>
     
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -43,27 +43,27 @@
     </include>
     
     <!-- Load the URDF with the given hardware interface into the ROS Parameter Server -->
-    <param name="robot_description" command="xacro --inorder '$(arg robot_description)' hardware_interface:=$(arg hardware_interface) robot_name:=$(arg robot_name) initial_z:=$(arg initial_z)" />
+    <param name="robot_description" command="xacro --inorder '$(arg robot_description)' hardware_interface:=$(arg hardware_interface) robot_name:=$(arg robot_name) initial_z:=$(arg initial_z) mass:=$(arg mass)" />
     
     <!-- Run a python script to send a service call to gazebo_ros to spawn a URDF robot -->
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
           args="-urdf -model $(arg robot_name) -param robot_description "/>
     
-    <!--
-		<include file="$(find gazebo2rviz)/launch/gazebo2moveit.launch">
-			<arg name="frequency" default="1" />
-		</include> -->
-		  
-    <!-- Moveit 
-    <include file="$(find hand_iiwa_moveit)/launch/planning_context.launch" />
-    <include file="$(find hand_iiwa_moveit)/launch/move_group.launch">
-        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
-    </include>-->
     
-    <!-- GUI 
-    <include if="$(arg gui)" file="$(find hand_iiwa_moveit)/launch/moveit_rviz.launch">
+	<include file="$(find gazebo2rviz)/launch/gazebo2moveit.launch">
+		<arg name="frequency" default="1" />
+	</include>
+		  
+    <!-- Moveit -->
+    <include file="$(find object_iiwa_moveit)/launch/planning_context.launch" />
+    <include file="$(find object_iiwa_moveit)/launch/move_group.launch">
+        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+    </include>
+    
+    <!-- GUI -->
+    <include if="$(arg gui)" file="$(find object_iiwa_moveit)/launch/moveit_rviz.launch">
         <arg name="config" value="true"/>
     </include>
-    -->
+    
      
 </launch>

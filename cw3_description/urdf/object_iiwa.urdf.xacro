@@ -2,7 +2,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="object_iiwa">
 
     <xacro:arg name="hardware_interface" default="EffortJointInterface"/>
-    <xacro:arg name="initial_z" default="0.0"/>   
+    <xacro:arg name="initial_z" default="0.0"/>
+    <xacro:arg name="mass" default="3.0"/>   
     
     <link name="world"/>
 
@@ -22,21 +23,12 @@
     </xacro:iiwa14>
 <!---->
     <xacro:include filename="$(find cw3_description)/urdf/weighted_object.xacro"/>
-    <xacro:weighted_object mass="3"/>
+    <xacro:weighted_object mass="$(arg mass)"/>
     
     <joint name="$(arg robot_name)_ee_to_object" type="fixed">
         <parent link="$(arg robot_name)_link_ee"/>
         <child link="object_link_0"/>
 		<origin xyz="0.0 0.0 0.1" rpy="${0.0} ${0.0} ${0.0}"/>
-    </joint>
-    
-    <xacro:include filename="$(find cw3_description)/urdf/kinect.urdf.xacro"/>
-    <xacro:shadowarm_side_kinect />
-    
-    <joint name="kinect_world_to_eye" type="fixed">
-        <parent link="world"/>
-        <child link="camera_link"/>
-		<origin xyz="0.6 -0.1 1.1" rpy="${0.0} ${pi/8} ${pi/2}"/>
     </joint>
 
 </robot>
