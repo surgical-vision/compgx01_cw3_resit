@@ -31,12 +31,12 @@
       - object_iiwa_joint_6
       - object_iiwa_joint_7
     gains:
-      object_iiwa_joint_1: {p: 1000,  d: 100, i: 15, i_clamp: 30}
-      object_iiwa_joint_2: {p: 8000,  d: 100, i: 60, i_clamp: 30}
-      object_iiwa_joint_3: {p: 1000,  d: 200, i: 15, i_clamp: 30}
-      object_iiwa_joint_4: {p: 4500,  d: 400, i: 12, i_clamp: 30}
+      object_iiwa_joint_1: {p: 1000,  d: 50, i: 15, i_clamp: 30}
+      object_iiwa_joint_2: {p: 5000,  d: 80, i: 15, i_clamp: 30}
+      object_iiwa_joint_3: {p: 1000,  d: 50, i: 15, i_clamp: 30}
+      object_iiwa_joint_4: {p: 2500,  d: 40, i: 12, i_clamp: 30}
       object_iiwa_joint_5: {p: 1000,  d: 30, i: 5, i_clamp: 30}
-      object_iiwa_joint_6: {p: 2000,  d: 250, i: 3, i_clamp: 30}
+      object_iiwa_joint_6: {p: 2000,  d: 30, i: 3, i_clamp: 30}
       object_iiwa_joint_7: {p: 1000,  d: 20, i: 2.5, i_clamp: 10}
       
     constraints:
