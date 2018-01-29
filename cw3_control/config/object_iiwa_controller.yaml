@@ -31,16 +31,16 @@
       - object_iiwa_joint_6
       - object_iiwa_joint_7
     gains:
-      object_iiwa_joint_1: {p: 5000,  d: 50, i: -5.0, i_clamp: 300}
-      object_iiwa_joint_2: {p: 5000,  d: 50, i: -5.0, i_clamp: 300}
-      object_iiwa_joint_3: {p: 1000,  d: 30, i: -5.0, i_clamp: 300}
-      object_iiwa_joint_4: {p: 5000,  d: 30, i: -5.0, i_clamp: 300}
-      object_iiwa_joint_5: {p: 100,  d: 0, i: 0, i_clamp: 300}
-      object_iiwa_joint_6: {p: 3000,  d: -3.0, i: 0.0, i_clamp: 300}
+      object_iiwa_joint_1: {p: 1000,  d: 50, i: 0.01, i_clamp: 100}
+      object_iiwa_joint_2: {p: 5000,  d: 50, i: 0.1, i_clamp: 100}
+      object_iiwa_joint_3: {p: 1000,  d: 1.0, i: 0.1, i_clamp: 100}
+      object_iiwa_joint_4: {p: 5000,  d: 30, i: 0.1, i_clamp: 100}
+      object_iiwa_joint_5: {p: 1000,  d: 1.0, i: 0.1, i_clamp: 100}
+      object_iiwa_joint_6: {p: 3000,  d: 0.1, i: 0.01, i_clamp: 100}
       object_iiwa_joint_7: {p: 10,  d: 0, i: 0, i_clamp: 100}
       
     constraints:
-      goal_time: 0.5                   # Override default
+      goal_time: 1                  # Override default
 
     state_publish_rate:  500            # Override default
     action_monitor_rate: 500            # Override default
