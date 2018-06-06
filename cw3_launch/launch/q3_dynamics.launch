@@ -5,8 +5,8 @@
   <arg name="scene" default="1"/>
   <arg name="initial_z" default="0.0" />
   
-  <arg name="mass" value="3" if="$(eval arg('scene') == 1)"/>
-  <arg name="mass" value="1.5" if="$(eval arg('scene') == 2)"/>
+  <arg name="mass" value="2.45" if="$(eval arg('scene') == 1)"/>
+  <arg name="mass" value="1.85" if="$(eval arg('scene') == 2)"/>
     
   <include file="$(find cw3_launch)/launch/object_iiwa.launch">
     <arg name="gui" value="$(arg gui)"/>
