@@ -50,21 +50,21 @@
       <uri>model://RedCylinder</uri>
       <static>false</static>
       <name>RedCylinder</name>
-      <pose>0.6 0.4 0.75 0 -0 0</pose>
+      <pose>0.82 0.41 0.75 0 -0 0</pose>
     </include>
 
     <include>
       <uri>model://BlueCuboid</uri>
       <static>false</static>
       <name>BlueCuboid</name>
-      <pose>0.4 0.05 0.75 0 -0 0</pose>
+      <pose>0.75 0.02 0.75 0 -0 0</pose>
     </include>
     
     <include>
       <uri>model://GreenCube</uri>
       <static>false</static>
       <name>GreenCube</name>
-      <pose>0.7 0.65 0.75 0 -0 0</pose>
+      <pose>0.69 0.53 0.75 0 -0 -0</pose>
     </include>
 
     <physics type="ode">

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>cw3_subs</name>
+  <name>cw3_helper</name>
   <version>0.0.0</version>
   <description>The cw3_helper package</description>
 

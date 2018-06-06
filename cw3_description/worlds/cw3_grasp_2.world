@@ -64,7 +64,7 @@
       <uri>model://GreenCube</uri>
       <static>false</static>
       <name>GreenCube</name>
-      <pose>0.2 0.1 0.75 0 -0 -0.5</pose>
+      <pose>0.54 0.03 0.75 0 -0 -0.5</pose>
     </include>
 
     <physics type="ode">
